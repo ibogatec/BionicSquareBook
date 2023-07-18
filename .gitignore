@@ -1,0 +1,47 @@
+.idea
+.run
+.gradle
+.qodo
+.vscode
+__pycache__
+__venv__
+.[Vv]env
+[Rr]eports
+[Vv]env
+[Bb]uild
+[Bb]in
+[Dd]ebug
+[Rr]elease
+[Dd]ist
+[Oo]ut
+[Tt]emp
+[Tt]mp
+[Dd]b
+[Tt]arget
+[Oo]bj
+[Nn][Uu][Gg][Ee][Tt].[Cc][Oo][Nn][Ff][Ii][Gg]
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.env
+
+# JetBrains Rider / ReSharper personal settings
+*.DotSettings.user
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
