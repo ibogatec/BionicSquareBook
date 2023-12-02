@@ -29,6 +29,18 @@ public class CategoryController : Controller
     [ActionName("Create")]
     public IActionResult CreatePost(Category category)
     {
+        if (!ModelState.IsValid)
+        {
+            return View();
+        }
+
+        bool isDuplicate = _context.Categories.Any(c => c.Name.ToLower() == category.Name.ToLower());
+        if (isDuplicate)
+        {
+            ModelState.AddModelError("Name", $"Category with the name '{category.Name}' already exists");
+            return View();
+        }
+        
         _context.Categories.Add(category);
         _context.SaveChanges();
         return RedirectToAction("Index", "Category");
