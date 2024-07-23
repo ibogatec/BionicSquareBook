@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using BionicSquareWeb.Models;
+using BionicSquare.Models;
 
-namespace BionicSquareWeb.Data;
+namespace BionicSquare.DataAccess;
 
 public class ApplicationDbContext : DbContext
 {

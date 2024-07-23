@@ -1,4 +1,4 @@
-namespace BionicSquareWeb.Models;
+namespace BionicSquare.Models;
 
 public class ErrorViewModel
 {

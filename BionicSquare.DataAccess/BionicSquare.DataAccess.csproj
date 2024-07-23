@@ -1,12 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-    
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
-        <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <UserSecretsId>fbbe3c16-a938-4f80-94d8-7f275457faab</UserSecretsId>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
-    
+
     <ItemGroup>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.8">
             <PrivateAssets>all</PrivateAssets>
@@ -19,4 +18,9 @@
         </PackageReference>
     </ItemGroup>
     
+    <ItemGroup>
+        <ProjectReference Include="..\BionicSquare.Models\BionicSquare.Models.csproj" />
+        <ProjectReference Include="..\BionicSquare.Utility\BionicSquare.Utility.csproj" />
+    </ItemGroup>
+
 </Project>

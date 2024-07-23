@@ -1,4 +1,5 @@
-using BionicSquareWeb.Data;
+using BionicSquare.Business.Services;
+using BionicSquare.DataAccess;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     var connectionString = builder.Configuration.GetConnectionString("MSSqlConn");
     options.UseSqlServer(connectionString);
 });
+builder.Services.AddScoped<ICategoryServices, CategoryServices>();
 
 var app = builder.Build();
 

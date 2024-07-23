@@ -1,6 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BionicSquareWeb", "BionicSquareWeb\BionicSquareWeb.csproj", "{C3959BFE-3278-43A7-BFB1-05B0CFF5D640}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BionicSquare.Web", "BionicSquare.Web\BionicSquare.Web.csproj", "{C3959BFE-3278-43A7-BFB1-05B0CFF5D640}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BionicSquare.DataAccess", "BionicSquare.DataAccess\BionicSquare.DataAccess.csproj", "{E3D72F6F-53A5-4530-BAB1-E62F66BE5C5C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BionicSquare.Business", "BionicSquare.Business\BionicSquare.Business.csproj", "{0C970350-8E8B-48B0-B8C1-FECC7D8C5C36}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BionicSquare.Models", "BionicSquare.Models\BionicSquare.Models.csproj", "{FA0389CE-10C4-48F0-ACC3-2B0C4E3C057F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BionicSquare.Utility", "BionicSquare.Utility\BionicSquare.Utility.csproj", "{2A823418-FD82-4D88-9183-DB4C6B831226}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +20,21 @@ Global
 		{C3959BFE-3278-43A7-BFB1-05B0CFF5D640}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3959BFE-3278-43A7-BFB1-05B0CFF5D640}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3959BFE-3278-43A7-BFB1-05B0CFF5D640}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3D72F6F-53A5-4530-BAB1-E62F66BE5C5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3D72F6F-53A5-4530-BAB1-E62F66BE5C5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3D72F6F-53A5-4530-BAB1-E62F66BE5C5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3D72F6F-53A5-4530-BAB1-E62F66BE5C5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C970350-8E8B-48B0-B8C1-FECC7D8C5C36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C970350-8E8B-48B0-B8C1-FECC7D8C5C36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C970350-8E8B-48B0-B8C1-FECC7D8C5C36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C970350-8E8B-48B0-B8C1-FECC7D8C5C36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA0389CE-10C4-48F0-ACC3-2B0C4E3C057F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA0389CE-10C4-48F0-ACC3-2B0C4E3C057F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA0389CE-10C4-48F0-ACC3-2B0C4E3C057F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA0389CE-10C4-48F0-ACC3-2B0C4E3C057F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A823418-FD82-4D88-9183-DB4C6B831226}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A823418-FD82-4D88-9183-DB4C6B831226}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A823418-FD82-4D88-9183-DB4C6B831226}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A823418-FD82-4D88-9183-DB4C6B831226}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

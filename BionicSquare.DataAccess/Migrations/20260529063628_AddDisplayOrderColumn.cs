@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace BionicSquareWeb.Migrations
+namespace BionicSquare.DataAccess.Migrations
 {
     /// <inheritdoc />
     public partial class AddDisplayOrderColumn : Migration

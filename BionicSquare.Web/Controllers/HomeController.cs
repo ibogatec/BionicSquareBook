@@ -1,8 +1,8 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using BionicSquareWeb.Models;
+using BionicSquare.Models;
 
-namespace BionicSquareWeb.Controllers;
+namespace BionicSquare.Web.Controllers;
 
 public class HomeController : Controller
 {

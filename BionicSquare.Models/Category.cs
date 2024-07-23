@@ -1,15 +1,15 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace BionicSquareWeb.Models;
+namespace BionicSquare.Models;
 
 public class Category
 {
-    public int Id { get; set; }
+    public int Id { get; init; }
     
     [Required]
     [MinLength(2)]
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; init; } = string.Empty;
 
     [Range(100, 1000, ErrorMessage = "Display order must be between 100 and 1000")]
-    public int DisplayOrder { get; set; }
+    public int DisplayOrder { get; init; }
 }
