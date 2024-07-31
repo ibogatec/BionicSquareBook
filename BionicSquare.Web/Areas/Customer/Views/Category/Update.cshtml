@@ -14,12 +14,12 @@
             <form method="post" asp-action="Update">
                 <input asp-for="@Model.Id" name="Id" type="hidden" />
                 <div class="mb-3">
-                    <label asp-for="@Model.Name" class="form-label fw-semibold small">Category Name</label>
+                    <label asp-for="@Model.Name" class="form-label fw-semibold small"></label>
                     <input asp-for="@Model.Name" type="text" name="Name" class="form-control" placeholder="Enter category name" />
                     <span asp-validation-for="@Model.Name" class="text-danger small"></span>
                 </div>
                 <div class="mb-3">
-                    <label asp-for="@Model.DisplayOrder" class="form-label fw-semibold small">Display Order</label>
+                    <label asp-for="@Model.DisplayOrder" class="form-label fw-semibold small"></label>
                     <input asp-for="@Model.DisplayOrder" type="number" name="DisplayOrder" class="form-control" placeholder="Enter display order" />
                     <span asp-validation-for="@Model.DisplayOrder" class="text-danger small"></span>
                 </div>
