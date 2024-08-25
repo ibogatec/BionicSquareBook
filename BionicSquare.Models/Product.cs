@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace BionicSquare.Models;
@@ -43,4 +44,8 @@ public class Product
     [Display(Name = "Product Image")]
     public string? ImageUrl { get; init; }
     
+    public int CategoryId { get; init; }
+    
+    [ForeignKey(nameof(CategoryId))]
+    public Category? Category { get; init; }
 }
