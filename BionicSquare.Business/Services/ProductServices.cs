@@ -13,8 +13,12 @@ public class ProductServices : IProductServices
         _context = context;
     }
     
-    public async Task<IEnumerable<Product>> GetAllProductsAsync()
+    public async Task<IEnumerable<Product>> GetAllProductsAsync(bool includeCategory = false)
     {
+        if (includeCategory)
+        {
+            return await _context.Products.Include(p => p.Category).ToListAsync();
+        }
         return await _context.Products.ToListAsync();
     }
     

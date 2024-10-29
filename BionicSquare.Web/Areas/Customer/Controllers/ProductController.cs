@@ -14,20 +14,13 @@ public class ProductController : Controller
         _productServices = productServices;
     }
     
+    #region UI CALLS
+    
     [HttpGet]
     [ActionName("Index")]
-    public async Task<IActionResult> IndexGetAsync()
+    public IActionResult IndexGet()
     {
-        IEnumerable<Product> products = new List<Product>();
-        try
-        {
-            products = await _productServices.GetAllProductsAsync();
-        }
-        catch
-        {
-            // ignored
-        }
-        return View(products);
+        return View();
     }
     
     [HttpGet]
@@ -137,5 +130,28 @@ public class ProductController : Controller
             return View();
         }
     }
+    
+    #endregion
+    
+    # region API CALLS
+    
+    [HttpGet]
+    [Route("api/products")]
+    [ActionName("GetAll")]
+    public async Task<IActionResult> IndexGetJsonAsync()
+    {
+        IEnumerable<Product> products = new List<Product>();
+        try
+        {
+            products = await _productServices.GetAllProductsAsync(includeCategory: true);
+        }
+        catch
+        {
+            // ignored
+        }
+        return Json(new { data = products });
+    }
+    
+    #endregion
     
 }

@@ -4,7 +4,7 @@ namespace BionicSquare.Business.Services;
 
 public interface IProductServices
 {
-    Task<IEnumerable<Product>> GetAllProductsAsync();
+    Task<IEnumerable<Product>> GetAllProductsAsync(bool includeCategory = false);
     
     Task<Product> CreateProductAsync(Product newProduct);
 
