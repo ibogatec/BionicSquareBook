@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using BionicSquare.Business.Services;
 using BionicSquare.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BionicSquare.Web.Controllers;
 
@@ -8,10 +9,12 @@ namespace BionicSquare.Web.Controllers;
 public class ProductController : Controller
 {
     private readonly IProductServices _productServices;
+    private readonly ICategoryServices _categoryServices;
     
-    public ProductController(IProductServices productServices)
+    public ProductController(IProductServices productServices, ICategoryServices categoryServices)
     {
         _productServices = productServices;
+        _categoryServices = categoryServices;
     }
     
     #region UI CALLS
@@ -25,9 +28,21 @@ public class ProductController : Controller
     
     [HttpGet]
     [ActionName("Create")]
-    public IActionResult CreateGet()
+    public async Task<IActionResult> CreateGetAsync()
     {
-        return View();
+        try
+        {
+            var categories = await _categoryServices.GetAllCategoriesAsync();
+            IEnumerable<SelectListItem> categoryListItems = categories
+                .Select(c => new SelectListItem { Text = c.Name, Value = c.Id.ToString() })
+                .ToList();
+            ViewData["categoryListItems"] = categoryListItems;
+        }
+        catch (Exception)
+        {
+            // ignored
+        }
+        return View("Update");
     }
 
     [HttpPost]
@@ -37,7 +52,7 @@ public class ProductController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return View();
+            return View("Update");
         }
         
         try
@@ -49,7 +64,7 @@ public class ProductController : Controller
         catch (Exception e)
         {
             ModelState.AddModelError("", $"error: {e.Message}");
-            return View();
+            return View("Update");
         }
     }
     

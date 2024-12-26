@@ -44,6 +44,7 @@ public class Product
     [Display(Name = "Product Image")]
     public string? ImageUrl { get; init; }
     
+    [Display(Name = "Category")]
     public int CategoryId { get; init; }
     
     [ForeignKey(nameof(CategoryId))]
