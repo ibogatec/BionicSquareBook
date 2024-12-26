@@ -33,10 +33,9 @@ public class ProductController : Controller
         try
         {
             var categories = await _categoryServices.GetAllCategoriesAsync();
-            IEnumerable<SelectListItem> categoryListItems = categories
+            ViewBag.CategoryListItems = categories
                 .Select(c => new SelectListItem { Text = c.Name, Value = c.Id.ToString() })
                 .ToList();
-            ViewData["categoryListItems"] = categoryListItems;
         }
         catch (Exception)
         {
