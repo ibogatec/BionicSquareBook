@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using BionicSquare.Business.Services;
 using BionicSquare.Models;
+using BionicSquare.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BionicSquare.Web.Controllers;
@@ -30,18 +31,22 @@ public class ProductController : Controller
     [ActionName("Create")]
     public async Task<IActionResult> CreateGetAsync()
     {
+        ProductViewModel productViewModel = new();
         try
         {
             var categories = await _categoryServices.GetAllCategoriesAsync();
-            ViewBag.CategoryListItems = categories
-                .Select(c => new SelectListItem { Text = c.Name, Value = c.Id.ToString() })
-                .ToList();
+            productViewModel = new()
+            {
+                CategoryList = categories
+                    .Select(c => new SelectListItem { Text = c.Name, Value = c.Id.ToString() })
+                    .ToList()
+            };
         }
         catch (Exception)
         {
             // ignored
         }
-        return View("Update");
+        return View("Update", productViewModel);
     }
 
     [HttpPost]
