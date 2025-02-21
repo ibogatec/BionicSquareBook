@@ -11,7 +11,7 @@
         </div>
         <div class="card-body p-4">
             <div asp-validation-summary="ModelOnly" class="text-danger small"></div>
-            <form method="post">
+            <form method="post" enctype="multipart/form-data">
                 <div class="col-lg-8">
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
                     <div class="row g-3">
@@ -67,6 +67,14 @@
                             <option disabled selected>--- Select category ---</option>
                         </select>
                         <span asp-validation-for="@Model.Product.CategoryId" class="text-danger small"></span>
+                    </div>
+                    <div class="mt-3">
+                        <label class="form-label fw-semibold small">Product Image</label>
+                        <div class="border border-2 border-dashed rounded p-4 text-center">
+                            <i class="bi bi-cloud-upload fs-4 text-secondary"></i>
+                            <input type="file" name="file" class="form-control form-control-sm mt-2" accept="image/*" />
+                            <p class="text-secondary mt-1 mb-0" style="font-size: 0.75rem;" >Drag a single product image(JPG, PNG)</p>
+                        </div>
                     </div>
                 </div>
                 <div class="col-lg-4">

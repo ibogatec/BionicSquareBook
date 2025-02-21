@@ -11,11 +11,16 @@ public class ProductController : Controller
 {
     private readonly IProductServices _productServices;
     private readonly ICategoryServices _categoryServices;
+    private readonly IWebHostEnvironment _webHostEnvironment;
     
-    public ProductController(IProductServices productServices, ICategoryServices categoryServices)
+    public ProductController(
+        IProductServices productServices,
+        ICategoryServices categoryServices,
+        IWebHostEnvironment webHostEnvironment)
     {
         _productServices = productServices;
         _categoryServices = categoryServices;
+        _webHostEnvironment = webHostEnvironment;
     }
     
     #region UI CALLS
@@ -34,17 +39,16 @@ public class ProductController : Controller
         ProductViewModel productViewModel = new();
         try
         {
-            var categories = await _categoryServices.GetAllCategoriesAsync();
             productViewModel = new()
             {
-                CategoryList = categories
+                CategoryList = (await _categoryServices.GetAllCategoriesAsync())
                     .Select(c => new SelectListItem { Text = c.Name, Value = c.Id.ToString() })
-                    .ToList()
+                    .ToArray()
             };
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            // ignored
+            ModelState.AddModelError("", $"Error: {e.Message}");
         }
         return View("Update", productViewModel);
     }
@@ -52,23 +56,38 @@ public class ProductController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     [ActionName("Create")]
-    public async Task<IActionResult> CreatePostAsync(Product product)
+    public async Task<IActionResult> CreatePostAsync(ProductViewModel productViewModel, IFormFile? file)
     {
-        if (!ModelState.IsValid)
-        {
-            return View("Update");
-        }
-        
         try
         {
-            var createdProduct = await _productServices.CreateProductAsync(product);
+            if (!ModelState.IsValid)
+            {
+                return View("Update", productViewModel);
+            }
+
+            string? fileName = null;
+            var productRelPath = Path.Combine("images", "uploads", "products");
+            if (file != null)
+            {
+                var productAbsPath = Path.Combine(_webHostEnvironment.WebRootPath, productRelPath);
+                if (!Directory.Exists(productAbsPath))
+                {
+                    Directory.CreateDirectory(productAbsPath);
+                }
+                fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+                var fileAbsPath = Path.Combine(productAbsPath, fileName);
+                await using var stream = new FileStream(fileAbsPath, FileMode.Create);
+                await file.CopyToAsync(stream);
+            }
+            productViewModel.Product.ImageUrl = !string.IsNullOrEmpty(fileName) ? Path.Combine(productRelPath, fileName) : null;
+            var createdProduct = await _productServices.CreateProductAsync(productViewModel.Product);
             TempData["success"] = $"Product '{createdProduct.Title}' created successfully";
             return RedirectToAction("Index");
         }
         catch (Exception e)
         {
-            ModelState.AddModelError("", $"error: {e.Message}");
-            return View("Update");
+            ModelState.AddModelError("", $"Error: {e.Message}");
+            return View("Update", productViewModel);
         }
     }
     

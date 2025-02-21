@@ -42,11 +42,12 @@ public class Product
     
     [ValidateNever]
     [Display(Name = "Product Image")]
-    public string? ImageUrl { get; init; }
+    public string? ImageUrl { get; set; }
     
     [Display(Name = "Category")]
     public int CategoryId { get; init; }
     
     [ForeignKey(nameof(CategoryId))]
+    [ValidateNever]
     public Category? Category { get; init; }
 }
