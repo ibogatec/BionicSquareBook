@@ -95,38 +95,69 @@ public class ProductController : Controller
     [ActionName("Update")]
     public async Task<IActionResult> UpdateGetAsync(int? id)
     {
-        var product = new Product { Id = 0, Title = "Unknown", Description = "Unknown", Price = 0 };
+        ProductViewModel productViewModel = new();
         try
         {
-            product = await _productServices.GetProductByIdAsync(id);
+            productViewModel = new()
+            {
+                Action = "Update Product",
+                Product = await _productServices.GetProductByIdAsync(id),
+                CategoryList = (await _categoryServices.GetAllCategoriesAsync())
+                    .Select(c => new SelectListItem { Text = c.Name, Value = c.Id.ToString() })
+                    .ToArray()
+            };
         }
         catch (Exception e)
         {
             ModelState.AddModelError("", $"Error: {e.Message}");
         }
-        return View(product);
+        return View(productViewModel);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     [ActionName("Update")]
-    public async Task<IActionResult> UpdatePostAsync(Product product)
+    public async Task<IActionResult> UpdatePostAsync(ProductViewModel productViewModel, IFormFile? file)
     {
-        if (!ModelState.IsValid)
-        {
-            return View();
-        }
-        
         try
         {
-            var updatedProduct = await _productServices.UpdateProductAsync(product);
-            TempData["success"] = $"Product '{updatedProduct.Title}' updated successfully";
+            if (!ModelState.IsValid)
+            {
+                return View(productViewModel);
+            }
+
+            string? fileName = null;
+            var productRelPath = Path.Combine("images", "uploads", "products");
+            var productAbsPath = Path.Combine(_webHostEnvironment.WebRootPath, productRelPath);
+            if (file != null)
+            {
+                if (!Directory.Exists(productAbsPath))
+                {
+                    Directory.CreateDirectory(productAbsPath);
+                }
+                fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+                var fileAbsPath = Path.Combine(productAbsPath, fileName);
+                await using var stream = new FileStream(fileAbsPath, FileMode.Create);
+                await file.CopyToAsync(stream);
+            }
+
+            if (!string.IsNullOrEmpty(productViewModel.Product.ImageUrl))
+            {
+                var existingImageAbsPath = Path.Combine(_webHostEnvironment.WebRootPath, productViewModel.Product.ImageUrl);
+                if (System.IO.File.Exists(existingImageAbsPath))
+                {
+                    System.IO.File.Delete(existingImageAbsPath);
+                }
+            }
+            productViewModel.Product.ImageUrl = !string.IsNullOrEmpty(fileName) ? Path.Combine(productRelPath, fileName) : null;
+            var createdProduct = await _productServices.UpdateProductAsync(productViewModel.Product);
+            TempData["success"] = $"Product '{createdProduct.Title}' updated successfully";
             return RedirectToAction("Index");
         }
         catch (Exception e)
         {
             ModelState.AddModelError("", $"Error: {e.Message}");
-            return View();
+            return View(productViewModel);
         }
     }
 

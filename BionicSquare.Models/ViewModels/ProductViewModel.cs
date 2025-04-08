@@ -10,4 +10,7 @@ public class ProductViewModel
     [ValidateNever]
     public IEnumerable<SelectListItem> CategoryList { get; init; } = Array.Empty<SelectListItem>();
     
+    [ValidateNever]
+    public string Action { get; init; } = "Create Product";
+    
 }
