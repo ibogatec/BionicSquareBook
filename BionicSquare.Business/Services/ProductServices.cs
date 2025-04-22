@@ -1,16 +1,21 @@
 using Microsoft.EntityFrameworkCore;
 using BionicSquare.DataAccess;
 using BionicSquare.Models;
+using Microsoft.AspNetCore.Hosting;
 
 namespace BionicSquare.Business.Services;
 
 public class ProductServices : IProductServices
 {
     private readonly ApplicationDbContext _context;
+    private readonly IWebHostEnvironment _webHostEnvironment;
     
-    public ProductServices(ApplicationDbContext context)
+    public ProductServices(
+        ApplicationDbContext context,
+        IWebHostEnvironment webHostEnvironment)
     {
         _context = context;
+        _webHostEnvironment = webHostEnvironment;
     }
     
     public async Task<IEnumerable<Product>> GetAllProductsAsync(bool includeCategory = false)
@@ -48,6 +53,18 @@ public class ProductServices : IProductServices
     public async Task<Product> DeleteProductByIdAsync(int? id)
     {
         var product = await GetProductByIdAsync(id);
+        if (product is null)
+        {
+            throw new Exception($"Product with id '{id}' not found in database");
+        }
+        if (!string.IsNullOrEmpty(product.ImageUrl))
+        {
+            var fullImagePath = Path.Combine(_webHostEnvironment.WebRootPath, product.ImageUrl);
+            if (File.Exists(fullImagePath))
+            {
+                File.Delete(fullImagePath);
+            }
+        }
         _context.Products.Remove(product);
         return await _context.SaveChangesAsync() > 0 ? product : throw new DbUpdateException($"Failed to delete product: '{product.Title}' and id: '{id}'");
     }

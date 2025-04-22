@@ -160,45 +160,6 @@ public class ProductController : Controller
             return View(productViewModel);
         }
     }
-
-    [HttpGet]
-    [ActionName("Delete")]
-    public async Task<IActionResult> DeleteGetAsync(int? id)
-    {
-        var product = new Product { Id = 0, Title = "Unknown", Description = "Unknown", Price = 0 };
-        try
-        {
-            product = await _productServices.GetProductByIdAsync(id);
-        }
-        catch (Exception e)
-        {
-            ModelState.AddModelError("", $"Error: {e.Message}");
-        }
-        return View(product);
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [ActionName("Delete")]
-    public async Task<IActionResult> DeletePostAsync(int? id)
-    {
-        if (!ModelState.IsValid)
-        {
-            return View();
-        }
-        
-        try
-        {
-            var updatedProduct = await _productServices.DeleteProductByIdAsync(id);
-            TempData["success"] = $"Product '{updatedProduct.Title}' deleted successfully";
-            return RedirectToAction("Index");
-        }
-        catch (Exception e)
-        {
-            ModelState.AddModelError("", $"Error: {e.Message}");
-            return View();
-        }
-    }
     
     #endregion
     
@@ -206,7 +167,6 @@ public class ProductController : Controller
     
     [HttpGet]
     [Route("api/products")]
-    [ActionName("GetAll")]
     public async Task<IActionResult> IndexGetJsonAsync()
     {
         IEnumerable<Product> products = new List<Product>();
@@ -219,6 +179,25 @@ public class ProductController : Controller
             // ignored
         }
         return Json(new { data = products });
+    }
+    
+    [HttpDelete]
+    [Route("api/products/delete")]
+    public async Task<IActionResult> DeleteAsync(int? id)
+    {
+        try
+        {
+            if (id is null or 0)
+            {
+                return Json(new { success = false, error = $"Invalid product id: {id}" });
+            }
+            var deletedProduct = await _productServices.DeleteProductByIdAsync(id);
+            return Json(new { success = true, data = $"Product '{deletedProduct.Title}' deleted successfully" });
+        }
+        catch (Exception e)
+        {
+            return Json(new { success = false, error = $"Error: {e.Message}" });
+        }
     }
     
     #endregion
