@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BionicSquare.Web.Controllers;
 
-[Area("Customer")]
+[Area("Admin")]
 public class ProductController : Controller
 {
     private readonly IProductServices _productServices;

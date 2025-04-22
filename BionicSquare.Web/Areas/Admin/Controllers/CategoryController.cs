@@ -4,7 +4,7 @@ using BionicSquare.Models;
 
 namespace BionicSquare.Web.Controllers;
 
-[Area("Customer")]
+[Area("Admin")]
 public class CategoryController : Controller
 {
     private readonly ICategoryServices _categoryServices;
