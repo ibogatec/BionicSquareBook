@@ -11,7 +11,7 @@ $('#tblProducts').DataTable({
             width: '20%',
             render: (data, type, row) => `
 <div class="d-flex gap-2 justify-content-end">
-    <a href="/Product/Update?id=${row.id}" class="btn btn-sm btn-outline-success">
+    <a href="/Admin/Product/Update?id=${row.id}" class="btn btn-sm btn-outline-success">
         <i class="bi bi-pencil-square"></i> Edit
     </a>
     <a onclick="deleteProduct(${row.id}, '${row.title}')" class="btn btn-sm btn-outline-danger">

@@ -4,7 +4,7 @@ using BionicSquare.Models;
 
 namespace BionicSquare.Web.Controllers;
 
-[Area("Admin")]
+[Area("Customer")]
 public class HomeController : Controller
 {
     public IActionResult Index()
