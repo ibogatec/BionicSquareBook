@@ -34,11 +34,16 @@ public class ProductServices : IProductServices
         return await _context.SaveChangesAsync() > 0 ? newProduct : throw new DbUpdateException($"Failed to create product: '{newProduct.Title}' and id: '{newProduct.Id}'");
     }
 
-    public async Task<Product> GetProductByIdAsync(int? id)
+    public async Task<Product> GetProductByIdAsync(int? id, bool includeCategory = false)
     {
         if (id is null or 0)
         {
             throw new ArgumentNullException(nameof(id));
+        }
+
+        if (includeCategory)
+        {
+            return await _context.Products.Include(p => p.Category).FirstOrDefaultAsync(p => p.Id == id) ?? throw new Exception($"Product with id '{id}' not found in database");
         }
         return await _context.Products.FindAsync(id) ?? throw new Exception($"Product with id '{id}' not found in database");
     }

@@ -8,7 +8,7 @@ public interface IProductServices
     
     Task<Product> CreateProductAsync(Product newProduct);
 
-    Task<Product> GetProductByIdAsync(int? id);
+    Task<Product> GetProductByIdAsync(int? id, bool includeCategory = false);
 
     Task<Product> UpdateProductAsync(Product newProduct);
     
