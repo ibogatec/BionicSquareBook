@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using BionicSquare.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace BionicSquare.DataAccess;
 
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext : IdentityDbContext<IdentityUser>
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
     
@@ -13,7 +15,7 @@ public class ApplicationDbContext : DbContext
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // base.OnModelCreating(modelBuilder);
+        base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<Category>().HasData(
             new Category { Id = 1, Name = "Action", DisplayOrder = 1 },
