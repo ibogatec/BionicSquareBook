@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using BionicSquare.Models.ViewModels;
 
 namespace BionicSquareWeb.Areas.Identity.Controllers;
 
@@ -9,6 +10,26 @@ public class AccountController : Controller
     [ActionName("Login")]
     public IActionResult LoginGet()
     {
+        return View();
+    }
+
+    [HttpPost]
+    [ActionName("Login")]
+    public IActionResult LoginPost(LoginViewModel loginViewModel)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+
+        }
+        catch (Exception e)
+        {
+
+        }
+        
         return View();
     }
     
