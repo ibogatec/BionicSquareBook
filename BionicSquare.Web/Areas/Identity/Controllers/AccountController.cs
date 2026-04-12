@@ -40,6 +40,26 @@ public class AccountController : Controller
         return View();
     }
 
+    [HttpPost]
+    [ActionName("Register")]
+    public IActionResult RegisterPost(RegisterViewModel registerViewModel)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+
+        }
+        catch (Exception e)
+        {
+
+        }
+        
+        return View();
+    }
+
     [HttpGet]
     [ActionName("AccessDenied")]
     public IActionResult AccessDenied()
