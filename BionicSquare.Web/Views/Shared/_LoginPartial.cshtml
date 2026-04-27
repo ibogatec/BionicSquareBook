@@ -1,2 +1,14 @@
-<a asp-area="Identity" asp-controller="Account" asp-action="Register" class="text-white-50 text-decoration-none small fw-medium nav-link-hover">Register</a>
-<a asp-area="Identity" asp-controller="Account" asp-action="Login" class="btn btn-sm btn-accent fw-semibold">Login</a>
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <form method="post" asp-area="Identity" asp-controller="Account" asp-action="Logout">
+        <button type="submit" class="btn btn-sm btn-outline-light" style="font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase;">Logout</button>
+    </form>
+}
+else
+{
+    <a asp-area="Identity" asp-controller="Account" asp-action="Register" class="text-white-50 text-decoration-none small fw-medium nav-link-hover">Register</a>
+    <a asp-area="Identity" asp-controller="Account" asp-action="Login" class="btn btn-sm btn-accent fw-semibold">Login</a>
+}
