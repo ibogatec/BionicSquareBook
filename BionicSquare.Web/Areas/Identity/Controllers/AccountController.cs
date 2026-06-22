@@ -29,22 +29,31 @@ public class AccountController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     [ActionName("Login")]
-    public IActionResult LoginPost(LoginViewModel loginViewModel)
+    public async Task<IActionResult> LoginPostAsync(LoginViewModel loginViewModel)
     {
         try
         {
             if (!ModelState.IsValid)
             {
-                return View();
+                return View(loginViewModel);
             }
-
+            var result = await _signInManager.PasswordSignInAsync(
+                userName: loginViewModel.Email,
+                password: loginViewModel.Password,
+                isPersistent: loginViewModel.RememberMe,
+                lockoutOnFailure: false);
+            if (result.Succeeded)
+            {
+                return RedirectToAction("Index", "Home", new { area = "Customer" });
+            }
+            ModelState.AddModelError("", "Invalid login attempt.");
+            return View(loginViewModel);
         }
         catch (Exception e)
         {
-
+            ModelState.AddModelError("", $"Error: {e.Message}");
+            return View(loginViewModel);
         }
-        
-        return View();
     }
     
     [HttpPost]
@@ -77,7 +86,7 @@ public class AccountController : Controller
             
             ApplicationUser appUser = new()
             {
-                UserName = registerViewModel.Name,
+                UserName = registerViewModel.Email,
                 Email = registerViewModel.Email,
                 PhoneNumber = registerViewModel.PhoneNumber,
                 Name = registerViewModel.Name,
