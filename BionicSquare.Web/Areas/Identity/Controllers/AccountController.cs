@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using BionicSquare.Models;
 using BionicSquare.Models.ViewModels;
+using BionicSquare.Utility;
 
 namespace BionicSquareWeb.Areas.Identity.Controllers;
 
@@ -10,13 +12,16 @@ public class AccountController : Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
     
     public AccountController(
         UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager)
+        SignInManager<ApplicationUser> signInManager,
+        RoleManager<IdentityRole> roleManager)
     {
         _userManager = userManager;
         _signInManager = signInManager;
+        _roleManager = roleManager;
     }
 
     [HttpGet]
@@ -67,9 +72,18 @@ public class AccountController : Controller
     
     [HttpGet]
     [ActionName("Register")]
-    public IActionResult Register()
+    public IActionResult RegisterGet()
     {
-        return View();
+        var registerViewModel = new RegisterViewModel()
+        {
+            RoleList = 
+            [
+                new SelectListItem { Text = Role.Customer, Value = Role.Customer },
+                new SelectListItem { Text = Role.Admin, Value = Role.Admin },
+                new SelectListItem { Text = Role.Employee, Value = Role.Employee }
+            ]
+        };
+        return View(registerViewModel);
     }
 
     [HttpPost]
@@ -82,6 +96,11 @@ public class AccountController : Controller
             if (!ModelState.IsValid)
             {
                 return View(registerViewModel);
+            }
+
+            if (!await _roleManager.RoleExistsAsync(registerViewModel.Role))
+            {
+                await _roleManager.CreateAsync(new IdentityRole(registerViewModel.Role));
             }
             
             ApplicationUser appUser = new()
@@ -99,6 +118,7 @@ public class AccountController : Controller
             var result = await _userManager.CreateAsync(appUser, registerViewModel.Password);
             if (result.Succeeded)
             {
+                await _userManager.AddToRoleAsync(appUser, registerViewModel.Role);
                 await _signInManager.SignInAsync(appUser, isPersistent: false);
                 return RedirectToAction("Index", "Home",  new { area = "Customer" });
             }

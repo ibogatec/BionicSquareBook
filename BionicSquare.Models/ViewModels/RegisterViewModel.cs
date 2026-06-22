@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BionicSquare.Models.ViewModels;
 
@@ -41,5 +43,12 @@ public class RegisterViewModel
     
     [Display(Name = "Postal Code")]
     public string? PostalCode { get; set; }
+    
+    [Required]
+    [Display(Name = "Role")]
+    public string Role { get; set; } = string.Empty;
+
+    [ValidateNever]
+    public IEnumerable<SelectListItem> RoleList { get; init; } = Array.Empty<SelectListItem>();
     
 }
