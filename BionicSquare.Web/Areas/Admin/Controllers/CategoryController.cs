@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using BionicSquare.Business.Services;
 using BionicSquare.Models;
+using BionicSquare.Utility;
 
 namespace BionicSquare.Web.Controllers;
 
 [Area("Admin")]
+[Authorize(Roles = Role.Admin)]
 public class CategoryController : Controller
 {
     private readonly ICategoryServices _categoryServices;
@@ -15,6 +18,7 @@ public class CategoryController : Controller
     }
     
     [HttpGet]
+    [AllowAnonymous]
     [ActionName("Index")]
     public async Task<IActionResult> IndexGetAsync()
     {

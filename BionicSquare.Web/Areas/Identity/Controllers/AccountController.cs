@@ -26,15 +26,16 @@ public class AccountController : Controller
 
     [HttpGet]
     [ActionName("Login")]
-    public IActionResult LoginGet()
+    public IActionResult LoginGet(string? returnUrl = null)
     {
+        ViewData["ReturnUrl"] = returnUrl;
         return View();
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     [ActionName("Login")]
-    public async Task<IActionResult> LoginPostAsync(LoginViewModel loginViewModel)
+    public async Task<IActionResult> LoginPostAsync(LoginViewModel loginViewModel, string? returnUrl = null)
     {
         try
         {
@@ -49,6 +50,10 @@ public class AccountController : Controller
                 lockoutOnFailure: false);
             if (result.Succeeded)
             {
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
                 return RedirectToAction("Index", "Home", new { area = "Customer" });
             }
             ModelState.AddModelError("", "Invalid login attempt.");
@@ -72,8 +77,9 @@ public class AccountController : Controller
     
     [HttpGet]
     [ActionName("Register")]
-    public IActionResult RegisterGet()
+    public IActionResult RegisterGet(string? returnUrl = null)
     {
+        ViewData["ReturnUrl"] = returnUrl;
         var registerViewModel = new RegisterViewModel()
         {
             RoleList = 
@@ -89,7 +95,7 @@ public class AccountController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     [ActionName("Register")]
-    public async Task<IActionResult> RegisterPostAsync(RegisterViewModel registerViewModel)
+    public async Task<IActionResult> RegisterPostAsync(RegisterViewModel registerViewModel, string? returnUrl = null)
     {
         try
         {
@@ -120,6 +126,10 @@ public class AccountController : Controller
             {
                 await _userManager.AddToRoleAsync(appUser, registerViewModel.Role);
                 await _signInManager.SignInAsync(appUser, isPersistent: false);
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
                 return RedirectToAction("Index", "Home",  new { area = "Customer" });
             }
 

@@ -1,12 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 using BionicSquare.Business.Services;
 using BionicSquare.Models;
 using BionicSquare.Models.ViewModels;
-using Microsoft.AspNetCore.Mvc.Rendering;
+using BionicSquare.Utility;
 
 namespace BionicSquare.Web.Controllers;
 
 [Area("Admin")]
+[Authorize(Roles = Role.Admin)]
 public class ProductController : Controller
 {
     private readonly IProductServices _productServices;
@@ -26,6 +29,7 @@ public class ProductController : Controller
     #region UI CALLS
     
     [HttpGet]
+    [AllowAnonymous]
     [ActionName("Index")]
     public IActionResult IndexGet()
     {
@@ -166,6 +170,7 @@ public class ProductController : Controller
     # region API CALLS
     
     [HttpGet]
+    [AllowAnonymous]
     [Route("api/products")]
     public async Task<IActionResult> IndexGetJsonAsync()
     {

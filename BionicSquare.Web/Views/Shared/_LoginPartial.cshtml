@@ -12,6 +12,6 @@
 }
 else
 {
-    <a asp-area="Identity" asp-controller="Account" asp-action="Register" class="text-white-50 text-decoration-none small fw-medium nav-link-hover">Register</a>
-    <a asp-area="Identity" asp-controller="Account" asp-action="Login" class="btn btn-sm btn-accent fw-semibold">Login</a>
+    <a asp-area="Identity" asp-controller="Account" asp-action="Register" asp-route-returnUrl="@ViewData["ReturnUrl"]" class="text-white-50 text-decoration-none small fw-medium nav-link-hover">Register</a>
+    <a asp-area="Identity" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" class="btn btn-sm btn-accent fw-semibold">Login</a>
 }
