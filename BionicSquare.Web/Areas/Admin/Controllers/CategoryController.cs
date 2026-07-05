@@ -18,7 +18,6 @@ public class CategoryController : Controller
     }
     
     [HttpGet]
-    [AllowAnonymous]
     [ActionName("Index")]
     public async Task<IActionResult> IndexGetAsync()
     {

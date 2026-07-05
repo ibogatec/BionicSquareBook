@@ -1,3 +1,11 @@
+@using BionicSquare.Utility
 @{
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    if (User.IsInRole(Role.Admin) || User.IsInRole(Role.Employee))
+    {
+        Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
 }

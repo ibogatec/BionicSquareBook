@@ -29,7 +29,6 @@ public class ProductController : Controller
     #region UI CALLS
     
     [HttpGet]
-    [AllowAnonymous]
     [ActionName("Index")]
     public IActionResult IndexGet()
     {
@@ -170,7 +169,6 @@ public class ProductController : Controller
     # region API CALLS
     
     [HttpGet]
-    [AllowAnonymous]
     [Route("api/products")]
     public async Task<IActionResult> IndexGetJsonAsync()
     {
