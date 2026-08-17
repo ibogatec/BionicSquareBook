@@ -16,6 +16,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     
     public DbSet<OrderHeader> OrderHeaders { get; set; }
     
+    public DbSet<OrderDetails> OrderDetails { get; set; }
+    
     public DbSet<ApplicationUser> ApplicationUsers { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
