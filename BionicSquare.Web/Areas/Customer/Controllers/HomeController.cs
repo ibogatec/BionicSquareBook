@@ -1,5 +1,6 @@
-using System.Diagnostics;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using BionicSquare.Models;
 using BionicSquare.Business.Services;
 
@@ -9,10 +10,14 @@ namespace BionicSquare.Web.Controllers;
 public class HomeController : Controller
 {
     private readonly IProductServices _productServices;
+    private readonly IShoppingCartService _shoppingCartService;
     
-    public HomeController(IProductServices productServices)
+    public HomeController(
+        IProductServices productServices,
+        IShoppingCartService shoppingCartService)
     {
         _productServices = productServices;
+        _shoppingCartService = shoppingCartService;
     }
     
     [HttpGet]
@@ -33,26 +38,49 @@ public class HomeController : Controller
     
     [HttpGet]
     [ActionName("Details")]
-    public async Task<IActionResult> DetailsGetAsync(int productId)
+    public async Task<IActionResult> DetailsGetAsync(int productId, int quantity = 1)
     {
-        Product? product = null;
         try
         {
-            product = await _productServices.GetProductByIdAsync(productId, includeCategory: true);
+            var product = await _productServices.GetProductByIdAsync(productId, includeCategory: true);
+            ShoppingCart cart = new()
+            {
+                Product = product,
+                Quantity = quantity,
+                ProductId = productId
+            };
+            return View(cart);
         }
         catch (Exception e)
         {
             ModelState.AddModelError("", $"Error: {e.Message}");
+            return View(null);
         }
-        return View(product);
     }
     
     [HttpPost]
     [ActionName("Details")]
-    public async Task<IActionResult> DetailsPostAsync(int id)
+    [ValidateAntiForgeryToken]
+    [Authorize]
+    public async Task<IActionResult> DetailsPostAsync(ShoppingCart cart)
     {
-        Product? product = null;
-        return View(product);
+        try
+        {
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            cart.ApplicationUserId = userId;
+            var addedCart = await _shoppingCartService.AddToCartAsync(cart);
+            return RedirectToAction("Details", new { productId = addedCart.ProductId, quantity = addedCart.Quantity });
+        }
+        catch (Exception e)
+        {
+            ModelState.AddModelError("", $"Error: {e.Message}");
+            return View(null);
+        }
     }
 
     public IActionResult Privacy()

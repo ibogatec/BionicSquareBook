@@ -16,18 +16,18 @@ public class ShoppingCart
     
     [Required]
     [Display(Name = "User")]
-    public string ApplicationUserId { get; init; } = string.Empty;
+    public string ApplicationUserId { get; set; } = string.Empty;
     
     [ForeignKey(nameof(ApplicationUserId))]
     [ValidateNever]
-    public ApplicationUser? ApplicationUser { get; init; }
+    public ApplicationUser? ApplicationUser { get; set; }
     
     [Display(Name = "Product")]
-    public int ProductId { get; init; }
+    public int ProductId { get; set; }
     
     [ForeignKey(nameof(ProductId))]
     [ValidateNever]
-    public Product? Product { get; init; }
+    public Product? Product { get; set; }
 
     [NotMapped]
     public double Price
