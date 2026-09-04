@@ -1,0 +1,21 @@
+name: BionicSquareDb
+
+services:
+    sqlserver:
+        image: mcr.microsoft.com/mssql/server:2025-latest
+        container_name: mssqlserver2025
+        ports:
+            - "1433:1433"
+        environment:
+            MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD}"
+            ACCEPT_EULA: "Y"
+        volumes:
+            - sql_data:/var/opt/mssql
+        networks:
+            - mssqlnet
+        
+volumes:
+    sql_data:
+        
+networks:
+    mssqlnet:
