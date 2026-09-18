@@ -21,6 +21,8 @@ __venv__
 [Oo]bj
 [Ll]ib
 [Uu]ploads
+[Tt]est[Rr]esults
+[Cc]overage[Rr]eport
 [Nn][Uu][Gg][Ee][Tt].[Cc][Oo][Nn][Ff][Ii][Gg]
 # macOS
 .DS_Store
