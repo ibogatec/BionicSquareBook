@@ -5,7 +5,7 @@
             <DataCollector friendlyName="XPlat Code Coverage">
                 <Configuration>
                     <Format>cobertura</Format>
-                    <Exclude>[BionicSquare.UnitTests]*,[*]*.Migrations.*,[*]*ModelSnapshot*,[*]AspNetCoreGeneratedDocument.*,[*]BionicSquareWeb.Areas.Identity.Pages.*,[*]Program</Exclude>
+                    <Exclude>[BionicSquare.UnitTests]*,[BionicSquare.IntegrationTests]*,[*]*.Migrations.*,[*]*ModelSnapshot*,[*]AspNetCoreGeneratedDocument.*,[*]BionicSquareWeb.Areas.Identity.Pages.*,[*]Program</Exclude>
                     <ExcludeByAttribute>GeneratedCodeAttribute,ExcludeFromCodeCoverageAttribute</ExcludeByAttribute>
                     <ExcludeByFile>**/Migrations/**/*.cs,**/Areas/Identity/Pages/**/*.cs,**/Program.cs</ExcludeByFile>
                 </Configuration>

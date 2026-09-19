@@ -23,5 +23,9 @@
         <ProjectReference Include="..\BionicSquare.Business\BionicSquare.Business.csproj" />
         <ProjectReference Include="..\BionicSquare.DataAccess\BionicSquare.DataAccess.csproj" />
     </ItemGroup>
-    
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="BionicSquare.IntegrationTests" />
+    </ItemGroup>
+
 </Project>

@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BionicSquare.Utility", "Bio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BionicSquare.UnitTests", "BionicSquare.UnitTests\BionicSquare.UnitTests.csproj", "{6837BB4D-6751-49FE-9FD0-B8E0D5511310}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BionicSquare.IntegrationTests", "BionicSquare.IntegrationTests\BionicSquare.IntegrationTests.csproj", "{8482595C-0C6B-4F17-81A4-E8185B43F7EA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +44,9 @@ Global
 		{6837BB4D-6751-49FE-9FD0-B8E0D5511310}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6837BB4D-6751-49FE-9FD0-B8E0D5511310}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6837BB4D-6751-49FE-9FD0-B8E0D5511310}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8482595C-0C6B-4F17-81A4-E8185B43F7EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8482595C-0C6B-4F17-81A4-E8185B43F7EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8482595C-0C6B-4F17-81A4-E8185B43F7EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8482595C-0C6B-4F17-81A4-E8185B43F7EA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
