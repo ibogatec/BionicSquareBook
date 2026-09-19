@@ -4,9 +4,10 @@
 [![Entity Framework Core](https://img.shields.io/badge/EF%20Core-10.0-512BD4?style=flat&logo=nuget)](https://docs.microsoft.com/ef/core/)
 [![SQL Server 2025](https://img.shields.io/badge/SQL%20Server-2025-CC292B?style=flat&logo=microsoftsqlserver)](https://www.microsoft.com/sql-server)
 [![Bootstrap 5](https://img.shields.io/badge/Bootstrap-5.3.8-7952B3?style=flat&logo=bootstrap)](https://getbootstrap.com/)
+[![Integration Tests](https://img.shields.io/badge/Integration%20Tests-104%20Passing-brightgreen?style=flat&logo=docker)](https://github.com/ibogatec/BionicSquareBook)
 [![Project Status](https://img.shields.io/badge/Status-In%20Development-orange?style=flat)](https://github.com)
 
-**BionicSquareBook** is a modern, full-featured e-commerce bookstore web application built with **ASP.NET Core 10 MVC**, **Entity Framework Core 10**, and **SQL Server 2025**. It demonstrates an N-Tier layered architecture with separation of concerns across presentation, business logic, data access, and domain models.
+**BionicSquareBook** is a modern, full-featured e-commerce bookstore web application built with **ASP.NET Core 10 MVC**, **Entity Framework Core 10**, and **SQL Server 2025**. It demonstrates an N-Tier layered architecture with separation of concerns across presentation, business logic, data access, and domain models, backed by an automated testing suite comprising unit tests and full-stack integration tests.
 
 ---
 
@@ -34,6 +35,15 @@
   - [5. Run the Application](#5-run-the-application)
 - [Default Roles & Access Control](#default-roles--access-control)
 - [REST API Endpoints](#rest-api-endpoints)
+- [Testing & Code Coverage](#testing--code-coverage)
+  - [Overview of Test Suites](#overview-of-test-suites)
+  - [Integration Testing Architecture](#integration-testing-architecture)
+  - [Running Unit Tests](#running-unit-tests)
+  - [Running Integration Tests](#running-integration-tests)
+  - [Running Tests with Code Coverage & Generating HTML Reports](#running-tests-with-code-coverage--generating-html-reports)
+  - [Where Coverage Reports are Found](#where-coverage-reports-are-found)
+  - [How to View and Read Code Coverage Reports](#how-to-view-and-read-code-coverage-reports)
+  - [Coverage Settings & Exclusions](#coverage-settings--exclusions)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -62,6 +72,11 @@ graph TD
         Utility["BionicSquare.Utility (Roles, Constants & Helpers)"]
     end
 
+    subgraph Testing ["Automated Test Suites"]
+        UnitTests["BionicSquare.UnitTests (xUnit + Moq)"]
+        IntegrationTests["BionicSquare.IntegrationTests (WebApplicationFactory + Testcontainers + Respawn)"]
+    end
+
     subgraph Infrastructure ["Infrastructure"]
         DockerDB["SQL Server 2025 (Docker Container)"]
     end
@@ -78,6 +93,15 @@ graph TD
     DataAccess --> Models
     DataAccess --> Utility
     DataAccess --> DockerDB
+
+    UnitTests -.-> Services
+    UnitTests -.-> Models
+    UnitTests -.-> Web
+
+    IntegrationTests -.-> Web
+    IntegrationTests -.-> Services
+    IntegrationTests -.-> DataAccess
+    IntegrationTests -.-> DockerDB
 ```
 
 ### Layer Responsibilities
@@ -93,9 +117,9 @@ graph TD
    - Enforces business rules (duplicate category validation, tiered product calculations, cart item adjustments, and file handling for image attachments).
 
 3. **`BionicSquare.DataAccess` (Data Access Layer)**:
-   - Entity Framework Core 10 database context ([`ApplicationDbContext`](file:///home/ivan/Examples/dotNET/BionicSquareBook/BionicSquare.DataAccess/ApplicationDbContext.cs)) inheriting from `IdentityDbContext<ApplicationUser>`.
+   - Entity Framework Core 10 database context ([`ApplicationDbContext`](file:///home/ivan/Examples/dotNET/BionicSquareBook/BionicSquare.DataAccess/ApplicationDbContext.cs)) inheriting from `IdentityDbContext<ApplicationUser>` directly mapped to SQL Server 2025.
    - Manages database relationships, foreign keys, table mapping, and initial seed data for categories and book catalog.
-   - Hosts database migrations tracking the schema evolution.
+   - Hosts database migrations tracking schema evolution.
 
 4. **`BionicSquare.Models` (Domain & ViewModel Layer)**:
    - Domain entities: [`Category`](file:///home/ivan/Examples/dotNET/BionicSquareBook/BionicSquare.Models/Category.cs), [`Product`](file:///home/ivan/Examples/dotNET/BionicSquareBook/BionicSquare.Models/Product.cs), [`ShoppingCart`](file:///home/ivan/Examples/dotNET/BionicSquareBook/BionicSquare.Models/ShoppingCart.cs), [`OrderHeader`](file:///home/ivan/Examples/dotNET/BionicSquareBook/BionicSquare.Models/OrderHeader.cs), [`OrderDetails`](file:///home/ivan/Examples/dotNET/BionicSquareBook/BionicSquare.Models/OrderDetails.cs), [`ApplicationUser`](file:///home/ivan/Examples/dotNET/BionicSquareBook/BionicSquare.Models/ApplicationUser.cs).
@@ -104,7 +128,13 @@ graph TD
 5. **`BionicSquare.Utility` (Shared Utilities)**:
    - Contains cross-cutting constants and helpers, such as role definitions ([`Role.cs`](file:///home/ivan/Examples/dotNET/BionicSquareBook/BionicSquare.Utility/Role.cs) with `Admin`, `Customer`, and `Employee`).
 
-6. **`BionicSquare.Data` (Infrastructure)**:
+6. **`BionicSquare.UnitTests` (Unit Testing Suite)**:
+   - Focused unit tests verifying domain calculations, view models, service validations, and isolated controller behaviors using `xUnit`, `Moq`, and `FluentAssertions`.
+
+7. **`BionicSquare.IntegrationTests` (Integration Testing Suite)**:
+   - End-to-end server integration tests verifying HTTP endpoints, routing, cookie/claims security, Razor view rendering, EF Core transactions, foreign key constraints, file system interactions, and database persistence against real Microsoft SQL Server 2025 Testcontainers.
+
+8. **`BionicSquare.Data` (Infrastructure)**:
    - Contains [`BionicSquare.Data/docker-compose.yml`](file:///home/ivan/Examples/dotNET/BionicSquareBook/BionicSquare.Data/docker-compose.yml) and environment configurations to provision containerized Microsoft SQL Server 2025.
 
 ---
@@ -113,7 +143,7 @@ graph TD
 
 ```text
 BionicSquareBook/
-├── BionicSquare.Business/         # Business Logic Layer (Services & Validation)
+├── BionicSquare.Business/                 # Business Logic Layer (Services & Validation)
 │   ├── Services/
 │   │   ├── ApplicationUserService.cs
 │   │   ├── CategoryServices.cs
@@ -121,17 +151,17 @@ BionicSquareBook/
 │   │   └── ShoppingCartService.cs
 │   └── BionicSquare.Business.csproj
 │
-├── BionicSquare.Data/             # Database container orchestration
-│   ├── docker-compose.yml         # SQL Server 2025 container specification
-│   └── .env                       # Environment variables (MSSQL password)
+├── BionicSquare.Data/                     # Database container orchestration
+│   ├── docker-compose.yml                 # SQL Server 2025 container specification
+│   └── .env                               # Environment variables (MSSQL password)
 │
-├── BionicSquare.DataAccess/       # Data Access Layer
-│   ├── ApplicationDbContext.cs    # EF Core DB context & model seeding
-│   ├── Migrations/                # EF Core database migrations
+├── BionicSquare.DataAccess/               # Data Access Layer
+│   ├── ApplicationDbContext.cs            # EF Core DB context & model seeding
+│   ├── Migrations/                        # EF Core database migrations
 │   └── BionicSquare.DataAccess.csproj
 │
-├── BionicSquare.Models/           # Domain Entities & ViewModels
-│   ├── ApplicationUser.cs         # Extended IdentityUser
+├── BionicSquare.Models/                   # Domain Entities & ViewModels
+│   ├── ApplicationUser.cs                 # Extended IdentityUser
 │   ├── Category.cs
 │   ├── Product.cs
 │   ├── ShoppingCart.cs
@@ -140,23 +170,40 @@ BionicSquareBook/
 │   ├── ViewModels/
 │   └── BionicSquare.Models.csproj
 │
-├── BionicSquare.Utility/          # Constants and Cross-cutting Utilities
-│   ├── Role.cs                    # Role definitions (Admin, Customer, Employee)
+├── BionicSquare.Utility/                  # Constants and Cross-cutting Utilities
+│   ├── Role.cs                            # Role definitions (Admin, Customer, Employee)
 │   └── BionicSquare.Utility.csproj
 │
-├── BionicSquare.Web/              # ASP.NET Core 10 Presentation Layer
+├── BionicSquare.Web/                      # ASP.NET Core 10 Presentation Layer
 │   ├── Areas/
-│   │   ├── Admin/                 # Admin controllers & views (Products, Categories, Dashboard)
-│   │   ├── Customer/              # Customer storefront (Home, Cart, Catalog)
-│   │   └── Identity/              # Authentication controllers (Login, Register, Logout)
-│   ├── Views/Shared/              # Shared layouts, partials & notifications
-│   ├── wwwroot/                   # Static files (CSS, JS, product image uploads)
-│   ├── Program.cs                 # App bootstrap, middleware pipeline & DI
-│   ├── appsettings.json           # Runtime configuration
+│   │   ├── Admin/                         # Admin controllers & views (Products, Categories, Dashboard)
+│   │   ├── Customer/                      # Customer storefront (Home, Cart, Catalog)
+│   │   └── Identity/                      # Authentication controllers (Login, Register, Logout)
+│   ├── Views/Shared/                      # Shared layouts, partials & notifications
+│   ├── wwwroot/                           # Static files (CSS, JS, product image uploads)
+│   ├── Program.cs                         # App bootstrap, middleware pipeline & DI
+│   ├── appsettings.json                   # Runtime configuration
 │   └── BionicSquare.Web.csproj
 │
-├── BionicSquareBook.sln           # Visual Studio / Rider Solution File
-└── Readme.md                      # Project documentation
+├── BionicSquare.UnitTests/                # Unit Tests (Fast, Isolated, Moq + FluentAssertions)
+│   ├── Controllers/
+│   ├── Models/
+│   ├── Services/
+│   └── BionicSquare.UnitTests.csproj
+│
+├── BionicSquare.IntegrationTests/         # Integration Tests (Full Stack, Testcontainers, Respawn)
+│   ├── Controllers/                       # Controller endpoint integration tests
+│   ├── Infrastructure/                    # WebApplicationFactory, TestAuthHandler, AngleSharp helpers
+│   ├── Services/                          # Real EF Core database persistence & interceptor tests
+│   └── BionicSquare.IntegrationTests.csproj
+│
+├── coverlet.runsettings                   # Code coverage instrumentation configuration
+├── run-unit-tests-with-coverage.sh        # Bash script: runs unit tests and generates coverage report
+├── run-unit-tests-with-coverage.ps1       # PowerShell script: runs unit tests and generates coverage report
+├── run-integration-tests-with-coverage.sh # Bash script: runs integration tests and generates coverage report
+├── run-integration-tests-with-coverage.ps1# PowerShell script: runs integration tests and generates coverage report
+├── BionicSquareBook.sln                   # Visual Studio / Rider Solution File
+└── Readme.md                              # Project documentation
 ```
 
 ---
@@ -175,6 +222,15 @@ BionicSquareBook/
   - SweetAlert2 (confirmation modals for destructive actions)
   - Toastr (asynchronous toast notifications)
   - jQuery 3.7.1 and unobtrusive validation
+- **Testing & Quality Assurance**:
+  - [xUnit](https://xunit.net/) test framework
+  - [FluentAssertions](https://fluentassertions.com/) for expressive assertion syntax
+  - [Moq](https://github.com/devlooped/moq) for isolating dependencies in unit tests
+  - [ASP.NET Core WebApplicationFactory](https://learn.microsoft.com/aspnet/core/test/integration-tests) for in-memory HTTP server integration testing
+  - [Testcontainers for .NET](https://dotnet.testcontainers.org/) for real containerized SQL Server 2025 instances
+  - [Respawn](https://github.com/jbogard/Respawn) for fast database table reset between test fixtures
+  - [AngleSharp](https://anglesharp.github.io/) for HTML DOM parsing and Razor UI assertions
+  - [Coverlet](https://github.com/coverlet-coverage/coverlet) and [ReportGenerator](https://github.com/danielpalme/ReportGenerator) for code coverage analysis and HTML reporting
 
 ---
 
@@ -209,6 +265,10 @@ BionicSquareBook/
   - Registration with automatic role assignment (`Customer`, `Admin`, `Employee`).
   - Cookie authentication with custom routes for login, logout, and access denied.
   - Protected admin routes restricted via `[Authorize(Roles = Role.Admin)]`.
+- [x] **Automated Testing & Code Coverage Suite**:
+  - Comprehensive unit tests covering business services, view models, and domain models.
+  - Full-stack integration test suite with 100+ tests verifying controllers, authentication, authorization, database persistence, and file handling against live SQL Server 2025 Testcontainers.
+  - Automated coverage collection and visual HTML reporting scripts.
 
 ---
 
@@ -217,7 +277,7 @@ BionicSquareBook/
 The following capabilities are planned or currently in development:
 
 - [ ] **Checkout & Payment Gateway Integration**:
-  - Wiring up the checkout submission from the shopping cart.
+  - Wiring up checkout submission from the shopping cart.
   - Integration with Stripe (or equivalent payment gateway) using the existing `OrderHeader` fields (`SessionId`, `PaymentIntentId`).
 - [ ] **Order Processing & Management Workflow**:
   - Administrative order management portal to review incoming orders.
@@ -229,21 +289,24 @@ The following capabilities are planned or currently in development:
   - Customer portal allowing users to review past orders, view receipts, and monitor shipment status.
 - [ ] **Email Notifications**:
   - Email confirmation upon user registration and order placement receipts.
-- [ ] **Automated Testing Suite**:
-  - Unit and integration tests for services, data layer, and controller actions.
 
 ---
 
 ## Prerequisites
 
-Before running the application, ensure the following are installed on your machine:
+Before running the application or test suites, ensure the following are installed on your machine:
 
 1. **[.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)** (or later)
-2. **[Docker](https://docs.docker.com/get-docker/)** and **Docker Compose** (for running SQL Server 2025)
-   - *Alternatively, a local or remote instance of Microsoft SQL Server 2019+.*
+2. **[Docker](https://docs.docker.com/get-docker/)** and **Docker Compose**
+   - Required for local app development (SQL Server 2025 container).
+   - Required for integration tests (Testcontainers automatically pulls and executes `mcr.microsoft.com/mssql/server:2025-latest`).
 3. **[.NET EF CLI Tool](https://docs.microsoft.com/ef/core/cli/dotnet)**:
    ```bash
    dotnet tool install --global dotnet-ef
+   ```
+4. **[ReportGenerator Global Tool](https://github.com/danielpalme/ReportGenerator)** (installed automatically by coverage scripts):
+   ```bash
+   dotnet tool install --global dotnet-reportgenerator-globaltool
    ```
 
 ---
@@ -392,6 +455,197 @@ The web application exposes lightweight JSON endpoints consumed by client-side s
 | `GET` | `/api/products` | Returns all products with category details for DataTables | Public |
 | `DELETE` | `/api/products/delete?id={id}` | Deletes a product and its associated image file | Admin |
 | `POST` | `/api/cart/update?cartId={id}&quantity={qty}` | Updates the quantity of an item in the user's cart | Authenticated |
+
+---
+
+## Testing & Code Coverage
+
+BionicSquareBook features a dual-layer testing strategy designed to ensure both rapid feedback during development and rock-solid validation across the entire request-response pipeline.
+
+### Overview of Test Suites
+
+| Test Project | Technology Stack | Scope & Purpose | Speed |
+| :--- | :--- | :--- | :--- |
+| **`BionicSquare.UnitTests`** | xUnit, Moq, FluentAssertions | Isolated unit testing of business logic, models, view models, and controller branches using mocked dependencies. | Very Fast (< 2s) |
+| **`BionicSquare.IntegrationTests`** | xUnit, ASP.NET Core `WebApplicationFactory`, `Testcontainers.MsSql`, `Respawn`, `AngleSharp` | Full-stack server integration testing against a live SQL Server 2025 container. Tests authentication cookies, authorization policies, middleware, model binding, EF Core persistence, transactions, file uploads, and Razor view rendering. | ~5–10s |
+
+---
+
+### Integration Testing Architecture
+
+The integration testing suite runs in an isolated, production-like environment configured in [`CustomWebApplicationFactory.cs`](file:///home/ivan/Examples/dotNET/BionicSquareBook/BionicSquare.IntegrationTests/Infrastructure/CustomWebApplicationFactory.cs):
+
+```mermaid
+sequenceDiagram
+    participant Test as Test Method
+    participant Client as HttpClient
+    participant Pipeline as ASP.NET Core Middleware & Routing
+    participant Auth as TestAuthHandler
+    participant Controller as MVC Controller
+    participant Service as Business Service
+    participant DB as MS SQL Server 2025 (Testcontainer)
+    participant Disk as Physical File System (wwwroot)
+
+    Note over DB: Testcontainers starts mcr.microsoft.com/mssql/server:2025-latest
+    Test->>Client: Send Request (e.g. POST /Admin/Product/Create with file)
+    Client->>Pipeline: HTTP Request with Claims/Headers
+    Pipeline->>Auth: Authenticate (Admin / Customer / Anonymous)
+    Pipeline->>Controller: Route to Action
+    Controller->>Service: Execute Domain Operation
+    Service->>DB: EF Core INSERT / UPDATE / DELETE
+    Service->>Disk: Save / Delete physical image file
+    Controller-->>Client: 302 Redirect / 200 OK HTML / JSON
+    Test->>DB: Query DbContext directly to verify persistence
+    Test->>Disk: Verify file presence or deletion on disk
+    Note over DB: Respawn resets table state for the next test fixture
+```
+
+Key integration test infrastructure components:
+- **`CustomWebApplicationFactory`**: Bootstraps the application in-memory, launches a dynamic `Testcontainers.MsSql` container, applies EF Core migrations, seeds identity roles, and initializes a `Respawn` checkpoint.
+- **`Respawn` Database Resetting**: Fast checkpoint-based reset between test fixtures without dropping and recreating the database or restarting containers.
+- **`TestAuthHandler` & `HttpClientExtensions`**: Intercepts HTTP requests to support seamless authentication testing across roles:
+  - `Client.AsAnonymous()`: Tests unauthenticated scenarios, login redirections, and public pages.
+  - `Client.WithUser(userId)`: Tests authenticated customer user actions (shopping cart, account details).
+  - `Client.WithAdmin(adminId)`: Tests admin-protected routes and role-based policies.
+- **`TestAntiforgery`**: Bypasses CSRF token validation during testing while keeping controller `[ValidateAntiForgeryToken]` attributes active in production.
+- **`AngleSharp` (`HtmlHelpers`)**: Parses server-rendered Razor HTML into an in-memory DOM to assert inputs, forms, and validation error messages.
+
+---
+
+### Running Unit Tests
+
+#### Quick Execution via .NET CLI
+
+To execute only the unit tests from the terminal:
+
+```bash
+dotnet test BionicSquare.UnitTests/BionicSquare.UnitTests.csproj
+```
+
+---
+
+### Running Integration Tests
+
+#### Prerequisites
+Ensure Docker is running on your machine. Testcontainers will automatically pull and start the Microsoft SQL Server 2025 image (`mcr.microsoft.com/mssql/server:2025-latest`) during test execution.
+
+#### Quick Execution via .NET CLI
+
+To execute all integration tests:
+
+```bash
+dotnet test BionicSquare.IntegrationTests/BionicSquare.IntegrationTests.csproj
+```
+
+---
+
+### Running Tests with Code Coverage & Generating HTML Reports
+
+Dedicated shell and PowerShell scripts are provided at the root of the repository. Each script:
+1. Cleans up previous test results (`./TestResults`) and coverage reports (`./CoverageReport`).
+2. Checks for and installs `dotnet-reportgenerator-globaltool` if not already present.
+3. Executes the target test project with Coverlet code coverage collection and the solution's [`coverlet.runsettings`](file:///home/ivan/Examples/dotNET/BionicSquareBook/coverlet.runsettings).
+4. Generates a standalone, visual HTML coverage report using ReportGenerator.
+
+#### For Unit Tests
+
+- **Linux / macOS**:
+  ```bash
+  ./run-unit-tests-with-coverage.sh
+  ```
+- **Windows (PowerShell)**:
+  ```powershell
+  .\run-unit-tests-with-coverage.ps1
+  ```
+
+#### For Integration Tests
+
+- **Linux / macOS**:
+  ```bash
+  ./run-integration-tests-with-coverage.sh
+  ```
+- **Windows (PowerShell)**:
+  ```powershell
+  .\run-integration-tests-with-coverage.ps1
+  ```
+
+---
+
+### Where Coverage Reports are Found
+
+After running either coverage script, the output files are placed in standard directories:
+
+| Output | Path | Format & Purpose |
+| :--- | :--- | :--- |
+| **HTML Report (Visual)** | `CoverageReport/index.html` | Interactive, navigable visual coverage dashboard displaying line-by-line coverage and source code highlighting. |
+| **Raw Cobertura XML** | `TestResults/<guid>/coverage.cobertura.xml` | Machine-readable coverage XML suitable for CI/CD pipelines (e.g., GitHub Actions, Azure Pipelines, SonarQube). |
+
+---
+
+### How to View and Read Code Coverage Reports
+
+#### 1. Viewing the Report in a Web Browser
+
+You can open the report directly using your default browser:
+
+- **Linux**:
+  ```bash
+  xdg-open CoverageReport/index.html
+  ```
+- **macOS**:
+  ```bash
+  open CoverageReport/index.html
+  ```
+- **Windows**:
+  ```powershell
+  start CoverageReport/index.html
+  ```
+
+#### 2. Viewing via a Local HTTP Server (e.g., Live Server)
+
+If you use VS Code / Cursor or prefer a local web server:
+- With the **Live Server** extension: Right-click `CoverageReport/index.html` and select **Open with Live Server** (default URL: `http://127.0.0.1:5500/CoverageReport/index.html`).
+- With Python:
+  ```bash
+  python3 -m http.server 5500
+  ```
+  Then open `http://127.0.0.1:5500/CoverageReport/index.html` in your browser.
+
+#### 3. Understanding Coverage Metrics & Indicators
+
+When reviewing the HTML report:
+
+- **Line / Sequence Coverage**: Measures the percentage of executable C# code statements traversed during the test run.
+- **Branch Coverage**: Measures the percentage of decision pathways (such as `if`/`else` branches, ternary expressions `? :`, null-coalescing operators `??`, and switch expressions) exercised during tests.
+- **Source Code Line Color Codes**:
+  - 🟩 **Green**: Line was fully executed by test cases.
+  - 🟥 **Red**: Line was not executed (uncovered code path).
+  - 🟧 **Yellow / Orange**: Partially covered branch (e.g. an `if` condition was evaluated as `true`, but the `false` branch was never exercised).
+- **Collapsible Breakdown**: Click on any assembly, namespace, or class (e.g., `BionicSquare.Business_ProductServices.html`) to inspect line-by-line coverage directly alongside source code.
+
+---
+
+### Coverage Settings & Exclusions
+
+Coverage collection is governed by [`coverlet.runsettings`](file:///home/ivan/Examples/dotNET/BionicSquareBook/coverlet.runsettings). To ensure the coverage metrics accurately represent meaningful business and application logic, non-actionable code is intentionally excluded:
+
+```xml
+<Configuration>
+  <DataCollectors>
+    <DataCollector friendlyName="XPlat Code Coverage">
+      <Configuration>
+        <Format>cobertura</Format>
+        <Exclude>[BionicSquare.UnitTests]*,[BionicSquare.IntegrationTests]*,[*]*.Migrations.*</Exclude>
+        <ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute</ExcludeByAttribute>
+        <ExcludeByFile>**/Program.cs,**/Migrations/*.cs</ExcludeByFile>
+      </Configuration>
+    </DataCollector>
+  </DataCollectors>
+</Configuration>
+```
+
+- **Excluded**: Test assemblies, auto-generated EF Core database migrations, compiler-generated closures, and boilerplate bootstrap files.
+- **Included**: All production business services (`BionicSquare.Business`), data access repositories (`BionicSquare.DataAccess`), domain models (`BionicSquare.Models`), controllers, and presentation logic (`BionicSquare.Web`).
 
 ---
 
