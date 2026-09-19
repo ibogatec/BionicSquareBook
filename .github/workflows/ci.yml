@@ -1,0 +1,86 @@
+name: Continuous Integration
+
+on:
+    push:
+        branches: [ master, main ]
+    pull_request:
+        branches: [ master, main ]
+    workflow_dispatch:
+
+permissions:
+    contents: read
+    actions: read
+
+jobs:
+    build-and-test:
+        name: Build & Test (Unit + Integration)
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v4
+
+            - name: Setup .NET SDK
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: '10.0.x'
+
+            - name: Restore Dependencies
+              run: dotnet restore BionicSquareBook.sln
+
+            - name: Build Solution
+              run: dotnet build BionicSquareBook.sln --no-restore --configuration Release
+
+            - name: Run Unit Tests with Coverage
+              run: |
+                  dotnet test BionicSquare.UnitTests/BionicSquare.UnitTests.csproj \
+                      --configuration Release \
+                      --no-build \
+                      --settings coverlet.runsettings \
+                      --collect:"XPlat Code Coverage" \
+                      --results-directory ./TestResults/UnitTests \
+                      --logger "trx;LogFileName=unit_tests.trx"
+
+            - name: Run Integration Tests with Coverage (Testcontainers SQL Server 2025)
+              run: |
+                  dotnet test BionicSquare.IntegrationTests/BionicSquare.IntegrationTests.csproj \
+                      --configuration Release \
+                      --no-build \
+                      --settings coverlet.runsettings \
+                      --collect:"XPlat Code Coverage" \
+                      --results-directory ./TestResults/IntegrationTests \
+                      --logger "trx;LogFileName=integration_tests.trx"
+
+            - name: Install ReportGenerator Tool
+              run: dotnet tool install --global dotnet-reportgenerator-globaltool
+
+            - name: Generate Code Coverage Report & Summary
+              run: |
+                  reportgenerator \
+                      -reports:"./TestResults/**/coverage.cobertura.xml" \
+                      -targetdir:"./CoverageReport" \
+                      -reporttypes:"Html;MarkdownSummaryGithub"
+
+            - name: Publish Coverage Summary to Job Summary
+              if: always()
+              run: |
+                  if [ -f "./CoverageReport/SummaryGithub.md" ]; then
+                      echo "## 📊 Code Coverage Summary" >> $GITHUB_STEP_SUMMARY
+                      cat ./CoverageReport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+                  fi
+
+            - name: Upload HTML Coverage Report Artifact
+              uses: actions/upload-artifact@v4
+              if: always()
+              with:
+                  name: code-coverage-report
+                  path: ./CoverageReport
+                  retention-days: 14
+
+            - name: Upload Test Results Artifacts (.trx)
+              uses: actions/upload-artifact@v4
+              if: always()
+              with:
+                  name: test-results
+                  path: ./TestResults/**/*.trx
+                  retention-days: 14
