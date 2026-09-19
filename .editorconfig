@@ -1,0 +1,61 @@
+# Top-most EditorConfig file
+root = true
+
+# Default rules for all files
+[*]
+indent_style = space
+indent_size = 4
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# Markdown and YAML files
+[*.{md,yml,yaml}]
+indent_size = 4
+trim_trailing_whitespace = false
+
+# XML, CSPROJ, SLN, and JSON files
+[*.{csproj,props,targets,xml,config,runsettings,json}]
+indent_size = 4
+
+# C# Code Styling and Quality Rules
+[*.cs]
+# Namespace preferences: file-scoped namespaces (C# 10+)
+csharp_style_namespace_declarations = file_scoped:suggestion
+
+# 'using' directive preferences
+dotnet_sort_system_directives_first = true
+csharp_using_directive_placement = outside_namespace:suggestion
+dotnet_diagnostic.IDE0005.severity = suggestion # Remove unused using directives
+
+# 'var' preferences
+csharp_style_var_for_built_in_types = false:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_style_var_elsewhere = true:suggestion
+
+# Expression-bodied members
+csharp_style_expression_bodied_methods = when_on_single_line:suggestion
+csharp_style_expression_bodied_constructors = false:suggestion
+csharp_style_expression_bodied_operators = when_on_single_line:suggestion
+csharp_style_expression_bodied_properties = true:suggestion
+csharp_style_expression_bodied_indexers = true:suggestion
+csharp_style_expression_bodied_accessors = true:suggestion
+csharp_style_expression_bodied_lambdas = true:suggestion
+
+# Pattern matching preferences
+csharp_style_pattern_matching_over_is_syntax = true:suggestion
+csharp_style_pattern_matching_over_as_syntax = true:suggestion
+csharp_style_prefer_pattern_matching = true:suggestion
+csharp_style_prefer_switch_expression = true:suggestion
+
+# Null-checking preferences
+csharp_style_prefer_null_check_over_type_check = true:suggestion
+csharp_style_conditional_delegate_call = true:suggestion
+
+# Modifier preferences
+csharp_preferred_modifier_order = public,protected,internal,private,static,abstract,virtual,override,sealed,readonly,volatile,async:suggestion
+
+# Code block preferences
+csharp_prefer_braces = true:suggestion
+csharp_preserve_single_line_blocks = true:none

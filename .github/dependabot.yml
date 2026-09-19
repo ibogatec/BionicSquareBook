@@ -1,0 +1,39 @@
+version: 2
+updates:
+    # Maintain NuGet package dependencies across all .NET projects in a single grouped PR
+    - package-ecosystem: "nuget"
+      directory: "/"
+      schedule:
+          interval: "weekly"
+          day: "monday"
+          time: "07:00"
+      open-pull-requests-limit: 10
+      groups:
+          nuget-dependencies:
+              patterns:
+                  - "*"
+      commit-message:
+          prefix: "deps"
+          include: "scope"
+      labels:
+          - "dependencies"
+          - "nuget"
+
+    # Maintain GitHub Actions dependencies in a single grouped PR
+    - package-ecosystem: "github-actions"
+      directory: "/"
+      schedule:
+          interval: "weekly"
+          day: "monday"
+          time: "07:00"
+      open-pull-requests-limit: 5
+      groups:
+          actions-dependencies:
+              patterns:
+                  - "*"
+      commit-message:
+          prefix: "ci"
+          include: "scope"
+      labels:
+          - "dependencies"
+          - "github-actions"

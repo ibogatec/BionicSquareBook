@@ -1,6 +1,8 @@
 # BionicSquareBook
 
 [![.NET 10](https://img.shields.io/badge/.NET-10.0-512BD4?style=flat&logo=dotnet)](https://dotnet.microsoft.com/)
+[![CI](https://github.com/ibogatec/BionicSquareBook/actions/workflows/ci.yml/badge.svg)](https://github.com/ibogatec/BionicSquareBook/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/ibogatec/BionicSquareBook/actions/workflows/codeql.yml/badge.svg)](https://github.com/ibogatec/BionicSquareBook/actions/workflows/codeql.yml)
 [![Entity Framework Core](https://img.shields.io/badge/EF%20Core-10.0-512BD4?style=flat&logo=nuget)](https://docs.microsoft.com/ef/core/)
 [![SQL Server 2025](https://img.shields.io/badge/SQL%20Server-2025-CC292B?style=flat&logo=microsoftsqlserver)](https://www.microsoft.com/sql-server)
 [![Bootstrap 5](https://img.shields.io/badge/Bootstrap-5.3.8-7952B3?style=flat&logo=bootstrap)](https://getbootstrap.com/)
@@ -143,6 +145,18 @@ graph TD
 
 ```text
 BionicSquareBook/
+├── .github/                               # GitHub configurations and DevOps automation
+│   ├── ISSUE_TEMPLATE/
+│   │   ├── bug_report.md                  # Standardized bug reporting template
+│   │   └── feature_request.md             # Feature request & enhancement proposal template
+│   ├── workflows/
+│   │   ├── ci.yml                         # GitHub Actions CI (Build, Unit & Integration Tests, Coverage Summary)
+│   │   └── codeql.yml                     # CodeQL Static Application Security Testing (SAST)
+│   ├── dependabot.yml                     # Dependabot configuration (NuGet & GitHub Actions updates)
+│   └── PULL_REQUEST_TEMPLATE.md           # Engineering pull request quality checklist
+│
+├── .editorconfig                          # Code style and analyzer standards
+│
 ├── BionicSquare.Business/                 # Business Logic Layer (Services & Validation)
 │   ├── Services/
 │   │   ├── ApplicationUserService.cs
@@ -215,6 +229,10 @@ BionicSquareBook/
 - **ORM**: Entity Framework Core 10.0 (SQL Server provider, Tools, Design)
 - **Database**: Microsoft SQL Server 2025 (via Docker)
 - **Authentication / Security**: ASP.NET Core Identity with role-based authorization and Cookie Authentication
+- **DevOps & CI/CD**:
+  - GitHub Actions Continuous Integration (multi-stage build, test, and report summary)
+  - GitHub CodeQL Static Application Security Testing (SAST)
+  - Dependabot automated NuGet and Actions dependency updates
 - **Front-end UI & Styling**:
   - Bootstrap 5.3.8 + Bootstrap Icons 1.13.1
   - Custom dark theme with vibrant emerald-green highlights (`#1DB954` / `#17A34A`)
